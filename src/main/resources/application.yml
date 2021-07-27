@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: zhangfu
+    password: 1109039190zf
+    url: jdbc:mysql://localhost:3306/seasons?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+  application:
+    name: Seasons
+
+mybatis:
+  typeAliasesPackage: com.zhang.seasons.bean
+  configuration:
+    map-underscore-to-camel-case: true
+
+server:
+  port: 8080
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countsql
