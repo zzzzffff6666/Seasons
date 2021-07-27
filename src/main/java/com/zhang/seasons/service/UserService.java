@@ -1,6 +1,5 @@
 package com.zhang.seasons.service;
 
-import com.zhang.seasons.bean.Role;
 import com.zhang.seasons.bean.User;
 import com.zhang.seasons.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +13,6 @@ public class UserService {
     private UserMapper userMapper;
     @Autowired
     private UserRoleMapper userRoleMapper;
-    @Autowired
-    private RoleMapper roleMapper;
-    @Autowired
-    private RolePermissionMapper rolePermissionMapper;
-    @Autowired
-    private PermissionMapper permissionMapper;
 
     // user 部分
 
@@ -97,35 +90,5 @@ public class UserService {
 
     public List<Integer> selectRoleByUid(int uid) {
         return userRoleMapper.selectByUid(uid);
-    }
-
-    // role 部分
-
-    public List<String> selectRoleNameByList(List<Integer> list) {
-        return roleMapper.selectNameByList(list);
-    }
-
-    public List<Role> selectRoleByList(List<Integer> list) {
-        return roleMapper.selectByList(list);
-    }
-
-    public List<Role> selectAllRole() {
-        return roleMapper.selectAll();
-    }
-
-    // role_permission 部分
-
-    public List<Integer> selectPermissionByRid(int rid) {
-        return rolePermissionMapper.selectByRid(rid);
-    }
-
-    public List<Integer> selectPermissionByRidList(List<Integer> list) {
-        return rolePermissionMapper.selectByList(list);
-    }
-
-    // permission 部分
-
-    public List<String> selectPermissionNameByList(List<Integer> list) {
-        return permissionMapper.selectByList(list);
     }
 }

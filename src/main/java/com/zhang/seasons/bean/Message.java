@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-    private int rid;
-    private String name;
-    private String desc;
+public class Message {
+    private int uid;
+    private String msg;
+    private Timestamp created;
+    private String url;
 }

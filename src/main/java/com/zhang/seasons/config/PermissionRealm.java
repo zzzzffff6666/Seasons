@@ -1,6 +1,7 @@
 package com.zhang.seasons.config;
 
 import com.zhang.seasons.bean.User;
+import com.zhang.seasons.service.RoleService;
 import com.zhang.seasons.service.UserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -15,15 +16,17 @@ import java.util.List;
 public class PermissionRealm extends AuthorizingRealm {
     @Autowired
     private UserService userService;
+    @Autowired
+    private RoleService roleService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         User user = (User) principalCollection.getPrimaryPrincipal();
 
         List<Integer> ridList = userService.selectRoleByUid(user.getUid());
-        List<String> roles = userService.selectRoleNameByList(ridList);
-        List<Integer> pidList = userService.selectPermissionByRidList(ridList);
-        List<String> permissions = userService.selectPermissionNameByList(pidList);
+        List<String> roles = roleService.selectRoleNameByList(ridList);
+        List<Integer> pidList = roleService.selectPermissionByRidList(ridList);
+        List<String> permissions = roleService.selectPermissionNameByList(pidList);
 
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         info.addRoles(roles);

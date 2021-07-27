@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-    private int rid;
+public class Style {
+    private int sid;
     private String name;
-    private String desc;
+    private int workNum;
 }

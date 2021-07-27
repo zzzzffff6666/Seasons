@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-    private int rid;
-    private String name;
-    private String desc;
+public class Subscription {
+    private int publisher;
+    private int subscriber;
+    private int level;
 }
