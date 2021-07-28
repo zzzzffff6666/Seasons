@@ -34,6 +34,13 @@ public interface OrdersMapper {
 
     @Select("select * " +
             "from orders " +
+            "where uid = #{uid} " +
+            "and state = #{state}")
+    @ResultType(Orders.class)
+    List<Orders> selectByUidAndState(int uid, int state);
+
+    @Select("select * " +
+            "from orders " +
             "where created between #{start} and #{end}")
     @ResultType(Orders.class)
     List<Orders> selectByTime(Timestamp start, Timestamp end);

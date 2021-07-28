@@ -1,16 +1,13 @@
 package com.zhang.seasons.mapper;
 
 import com.zhang.seasons.bean.Work;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.ResultType;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 public interface WorkMapper {
     @Insert("insert into work " +
-            "values(null, #{uid}, #{sid}, #{style}, #{title}, #{content}, " +
+            "values(null, #{uid}, #{sid}, #{style}, #{title}, #{content}, #{laudNum}" +
             "#{price}, #{priceBiz}, #{url}, #{type}, #{state}, #{created})")
     int insert(Work work);
 
@@ -29,30 +26,113 @@ public interface WorkMapper {
     int update(Work work);
 
     @Update("update work " +
+            "set laud_num = laud_num + #{addition}")
+    int updateLaud(int wid, int addition);
+
+    @Update("update work " +
             "set state = #{state} " +
             "where wid = #{wid}")
     int updateState(int wid, int state);
 
+    @Select("select * " +
+            "from work " +
+            "where wid = #{wid}")
     @ResultType(Work.class)
     Work select(int wid);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "and title like '%${title}%' " +
+            "order by #{sort}")
     @ResultType(Work.class)
-    List<Work> selectByTitle(String title);
+    List<Work> selectByTitle(String title, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "and type = #{type} " +
+            "and title like '%${title}%' " +
+            "order by #{sort}")
     @ResultType(Work.class)
-    List<Work> selectByTitleAndType(String title, String type);
+    List<Work> selectByTitleAndType(String title, String type, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "and style = #{style} " +
+            "order by #{sort}")
     @ResultType(Work.class)
-    List<Work> selectByStyle(String style);
+    List<Work> selectByStyle(String style, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "and type = #{type} " +
+            "and style = #{style} " +
+            "order by #{sort}")
     @ResultType(Work.class)
-    List<Work> selectByStyleAndType(String style, String type);
+    List<Work> selectByStyleAndType(String style, String type, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "and uid = #{uid} " +
+            "order by #{sort}")
     @ResultType(Work.class)
-    List<Work> selectByUid(int uid);
+    List<Work> selectByUid(int uid, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "and uid = #{uid} " +
+            "and type = #{type} " +
+            "order by #{sort}")
     @ResultType(Work.class)
-    List<Work> selectByUidAndType(int uid, String type);
-    @ResultType(Work.class)
-    List<Work> selectByState(int state);
-    @ResultType(Work.class)
-    List<Work> selectByStateAndType(int state, String type);
+    List<Work> selectByUidAndType(int uid, String type, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "and price between #{down} and #{up} " +
+            "order by #{sort}")
     @ResultType(Work.class)
     List<Work> selectByPrice(float up, float down, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "and type = #{type} " +
+            "and price between #{down} and #{up} " +
+            "order by #{sort}")
     @ResultType(Work.class)
-    List<Work> selectByPriceAndType(float up, float down, String sort, String type);
+    List<Work> selectByPriceAndType(float up, float down, String type, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 0 " +
+            "order by #{sort}")
+    @ResultType(Work.class)
+    List<Work> selectAll(String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 1 " +
+            "order by #{sort}")
+    @ResultType(Work.class)
+    List<Work> selectByDisapprove(String sort);
+
+    @Select("select * " +
+            "from work " +
+            "where state = 1 " +
+            "and type = #{type} " +
+            "order by #{sort}")
+    @ResultType(Work.class)
+    List<Work> selectByDisapproveAndType(String type, String sort);
+
+    @Select("select * " +
+            "from work " +
+            "order by #{sort}")
+    @ResultType(Work.class)
+    List<Work> selectAllByAdmin(String sort);
 }

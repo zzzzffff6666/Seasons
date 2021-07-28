@@ -16,6 +16,7 @@ public class Work {
     private String style;
     private String title;
     private String content;
+    private int laudNum;
     private float price;
     private float priceBiz;
     private String url;
