@@ -11,6 +11,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class UserController {
      * @return 是否成功
      */
     @PostMapping("/login")
+    @RequiresGuest
     public Result login(@RequestParam Map<String, String> params, HttpSession session) {
         String principal = params.get("name");
         if (UserUtil.errorPrincipal(principal)) return Result.error(APIMsg.PRINCIPAL_ERROR);
@@ -62,6 +64,7 @@ public class UserController {
      * @return 是否成功
      */
     @PostMapping("/register")
+    @RequiresGuest
     public Result register(@RequestParam User user) {
         if (UserUtil.errorName(user.getName())) return Result.error(APIMsg.NAME_ERROR);
         if (UserUtil.errorCredential(user.getPassword())) return Result.error(APIMsg.CREDENTIAL_ERROR);

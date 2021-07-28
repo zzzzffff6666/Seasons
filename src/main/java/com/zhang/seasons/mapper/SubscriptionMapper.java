@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SubscriptionMapper {
     @Insert("insert into subscription " +
-            "values(#{subscriber}, #{publisher}, #{level})")
+            "values(#{subscriber}, #{publisher}, #{level}, #{created})")
     int insert(Subscription sub);
 
     @Delete("delete from subscription " +
@@ -30,13 +30,20 @@ public interface SubscriptionMapper {
 
     @Select("select * " +
             "from subscription " +
-            "where publisher = #{publisher}")
+            "where publisher = #{publisher} " +
+            "order by created desc")
     @ResultType(Subscription.class)
     List<Subscription> selectByPublisher(int publisher);
 
     @Select("select * " +
             "from subscription " +
-            "where subscriber = #{subscriber}")
+            "where subscriber = #{subscriber} " +
+            "order by created desc")
     @ResultType(Subscription.class)
     List<Subscription> selectBySubscriber(int subscriber);
+
+    @Select("select * " +
+            "from subscription")
+    @ResultType(Subscription.class)
+    List<Subscription> selectAll();
 }

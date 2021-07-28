@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 public class Orders {
     private int oid;
     private int uid;
-    private Timestamp created;
     private float coin;
+    private int state;
+    private Timestamp created;
 }

@@ -28,6 +28,11 @@ public interface StyleMapper {
             "where sid = #{sid}")
     int updateWorkNum(int sid, int addition1, int addition2, int addition3, Timestamp updated);
 
+    @Update("update style " +
+            "set weekly_num = 0, " +
+            "daily_num = 0")
+    int eraseTimelyNum();
+
     @Select("select * " +
             "from style " +
             "where sid = #{sid}")

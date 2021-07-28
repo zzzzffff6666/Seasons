@@ -10,8 +10,10 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Message {
-    private int uid;
+    private int receiver;
+    private int sender;
     private String msg;
-    private Timestamp created;
     private String url;
+    private boolean read;
+    private Timestamp created;
 }
