@@ -68,13 +68,13 @@ public interface UserMapper {
     @ResultType(User.class)
     User selectByPhone(String phone);
 
-    @Select("select * " +
+    @Select("select uid, name, phone, coin, active " +
             "from user " +
             "where active = #{active}")
     @ResultType(User.class)
     List<User> selectByActive(boolean active);
 
-    @Select("select * " +
+    @Select("select uid, name, phone, coin, active " +
             "from user")
     @ResultType(User.class)
     List<User> selectAll();

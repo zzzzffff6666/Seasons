@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pay {
+public class Buy {
     private int uid;
     private int wid;
     private float price;

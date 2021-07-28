@@ -16,11 +16,19 @@ public class UserUtil {
         return encrypt(password, salt).equals(encrypt);
     }
 
-    public static boolean checkCredential(String str) {
-        return str.length() >= 2 && str.length() <= 11;
+    public static boolean errorName(String str) {
+        return str == null || str.length() < 2 || str.length() > 10;
     }
 
-    public static boolean checkPassword(String str) {
-        return str.length() >= 10 && str.length() <= 20;
+    public static boolean errorPhone(String str) {
+        return str == null || str.length() != 11;
+    }
+
+    public static boolean errorPrincipal(String str) {
+        return str == null || str.length() < 2 || str.length() > 11;
+    }
+
+    public static boolean errorCredential(String str) {
+        return str == null || str.length() < 10 || str.length() > 20;
     }
 }

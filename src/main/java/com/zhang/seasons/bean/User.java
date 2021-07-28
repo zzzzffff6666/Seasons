@@ -19,5 +19,13 @@ public class User {
     public void erasePassword() {
         this.password = null;
         this.salt = null;
+        this.active = false;
+    }
+
+    public void eraseInfo() {
+        this.password = null;
+        this.salt = null;
+        this.coin = 0;
+        this.active = false;
     }
 }

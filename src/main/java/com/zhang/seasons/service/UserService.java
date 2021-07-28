@@ -32,15 +32,15 @@ public class UserService {
         return userMapper.updatePhone(uid, phone) == 1;
     }
 
-    public boolean updatePassword(int uid, String password, String salt) {
+    public boolean updateUserPassword(int uid, String password, String salt) {
         return userMapper.updatePassword(uid, password, salt) == 1;
     }
 
-    public boolean updateCoin(int uid, float addition) {
+    public boolean updateUserCoin(int uid, float addition) {
         return userMapper.updateCoin(uid, addition) == 1;
     }
 
-    public boolean updateActive(int uid, boolean active) {
+    public boolean updateUserActive(int uid, boolean active) {
         return userMapper.updateActive(uid, active) == 1;
     }
 
@@ -52,9 +52,21 @@ public class UserService {
         return userMapper.selectName(name) == 1;
     }
 
-    public User selectUserByUid(int uid) {
+    public User selectUserByUid(int uid, int eraseLevel) {
         User user = userMapper.selectByUid(uid);
-        if (user != null) user.erasePassword();
+        if (user != null) {
+            if (eraseLevel == 1) user.erasePassword();
+            else if (eraseLevel == 2) user.eraseInfo();
+        }
+        return user;
+    }
+
+    public User selectUserByName(String name, int eraseLevel) {
+        User user = userMapper.selectByName(name);
+        if (user != null) {
+            if (eraseLevel == 1) user.erasePassword();
+            else if (eraseLevel == 2) user.eraseInfo();
+        }
         return user;
     }
 
