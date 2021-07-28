@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Subscription {
-    private int publisher;
     private int subscriber;
+    private int publisher;
     private int level;
 }
