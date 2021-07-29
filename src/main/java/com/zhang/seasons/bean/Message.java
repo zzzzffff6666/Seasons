@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 public class Message {
     private int receiver;
     private int sender;
+    private String senderName;
     private String msg;
     private String url;
     private boolean read;

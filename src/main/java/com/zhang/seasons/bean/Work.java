@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 public class Work {
     private int wid;
     private int uid;
-    private int sid;
     private String style;
     private String title;
     private String content;

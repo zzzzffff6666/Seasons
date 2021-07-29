@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface WorkMapper {
     @Insert("insert into work " +
-            "values(null, #{uid}, #{sid}, #{style}, #{title}, #{content}, #{laudNum}" +
+            "values(null, #{uid}, #{style}, #{title}, #{content}, #{laudNum}" +
             "#{price}, #{priceBiz}, #{url}, #{type}, #{state}, #{created})")
     int insert(Work work);
 
