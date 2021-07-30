@@ -27,11 +27,22 @@ public interface MessageMapper {
     int delete(int receiver, int sender, Timestamp created);
 
     @Update("update message " +
-            "set read = #{read} " +
+            "set read = 1 " +
             "where receiver = #{receiver} " +
             "and sender = #{sender} " +
             "and created = #{created}")
     int updateRead(Message message);
+
+    @Update("update message " +
+            "set read = 1 " +
+            "where receiver = #{receiver} " +
+            "and read = 0")
+    int updateReadAllByReceiver(int receiver);
+
+    @Select("select count(*) " +
+            "from message " +
+            "where receiver = #{receiver}")
+    int selectUnReadMount(int receiver);
 
     @Select("select * " +
             "from message " +

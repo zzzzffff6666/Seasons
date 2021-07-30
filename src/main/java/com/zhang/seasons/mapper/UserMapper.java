@@ -3,11 +3,12 @@ package com.zhang.seasons.mapper;
 import com.zhang.seasons.bean.User;
 import org.apache.ibatis.annotations.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface UserMapper {
-    @Insert("insert into user(name, phone, password, salt, coin, active) " +
-            "values(#{name}, #{phone}, #{password}, #{salt}, 0, 1)")
+    @Insert("insert into user(name, phone, password, salt, coin, active, login_time) " +
+            "values(#{name}, #{phone}, #{password}, #{salt}, 0, 1, #{loginTime})")
     int insert(User user);
 
     @Delete("delete from user " +
@@ -15,14 +16,10 @@ public interface UserMapper {
     int delete(int uid);
 
     @Update("update user " +
-            "set name = #{name} " +
+            "set name = #{name}, " +
+            "phone = #{phone} " +
             "where uid = #{uid}")
-    int updateName(int uid, String name);
-
-    @Update("update user " +
-            "set phone = #{phone} " +
-            "where uid = #{uid}")
-    int updatePhone(int uid, String phone);
+    int updateInfo(int uid, String name, String phone);
 
     @Update("update user " +
             "set password = #{password}, " +
@@ -39,6 +36,11 @@ public interface UserMapper {
             "set active = #{active} " +
             "where uid = #{uid}")
     int updateActive(int uid, boolean active);
+
+    @Update("update user " +
+            "set login_time = #{loginTime} " +
+            "where uid = #{uid}")
+    void updateLoginTime(int uid, Timestamp loginTime);
 
     @Select("select count(*) " +
             "from user " +
@@ -78,4 +80,9 @@ public interface UserMapper {
             "from user")
     @ResultType(User.class)
     List<User> selectAll();
+
+    @Select("select uid " +
+            "from user " +
+            "where login_time between #{start} and #{end}")
+    List<Integer> selectUidByLoginTime(Timestamp start, Timestamp end);
 }

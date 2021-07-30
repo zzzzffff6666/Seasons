@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
 import java.util.Map;
 
 @RestController
@@ -51,7 +52,8 @@ public class UserController {
             User user = userService.selectUserForLogin(principal);
             session.setAttribute("uid", user.getUid());
             session.setAttribute("name", user.getName());
-            user.erasePassword();
+            user.eraseInfo();
+            userService.updateUserLoginTime(user.getUid(), new Timestamp(System.currentTimeMillis()));
             return Result.success(user);
         } catch (AuthenticationException e) {
             return Result.error(APIMsg.LOGIN_ERROR);
@@ -98,20 +100,13 @@ public class UserController {
         return userService.deleteUser(uid) ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
     }
 
-    @PutMapping("/user/name/{name}")
+    @PutMapping("/user/info")
     @RequiresPermissions("user:update")
-    public Result updateUserName(@PathVariable("name") String name, HttpSession session) {
+    public Result updateUserName(@RequestParam("name") String name, @RequestParam("phone") String phone, HttpSession session) {
         if (UserUtil.errorName(name)) return Result.error(APIMsg.NAME_ERROR);
-        int uid = (int) session.getAttribute("uid");
-        return userService.updateUserName(uid, name) ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
-    }
-
-    @PutMapping("/user/phone/{phone}")
-    @RequiresPermissions("user:update")
-    public Result updateUserPhone(@PathVariable("phone") String phone, HttpSession session) {
         if (UserUtil.errorPhone(phone)) return Result.error(APIMsg.PHONE_ERROR);
         int uid = (int) session.getAttribute("uid");
-        return userService.updateUserPhone(uid, phone) ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
+        return userService.updateUserInfo(uid, name, phone) ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
     }
 
     // 没有用的接口

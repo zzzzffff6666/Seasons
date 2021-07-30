@@ -5,6 +5,7 @@ import com.zhang.seasons.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -24,12 +25,8 @@ public class UserService {
         return userMapper.delete(uid) == 1;
     }
 
-    public boolean updateUserName(int uid, String name) {
-        return userMapper.updateName(uid, name) == 1;
-    }
-
-    public boolean updateUserPhone(int uid, String phone) {
-        return userMapper.updatePhone(uid, phone) == 1;
+    public boolean updateUserInfo(int uid, String name, String phone) {
+        return userMapper.updateInfo(uid, name, phone) == 1;
     }
 
     public boolean updateUserPassword(int uid, String password, String salt) {
@@ -42,6 +39,10 @@ public class UserService {
 
     public boolean updateUserActive(int uid, boolean active) {
         return userMapper.updateActive(uid, active) == 1;
+    }
+
+    public void updateUserLoginTime(int uid, Timestamp loginTime) {
+        userMapper.updateLoginTime(uid, loginTime);
     }
 
     public float selectUserCoin(int uid) {
@@ -86,10 +87,14 @@ public class UserService {
         return userMapper.selectAll();
     }
 
+    public List<Integer> selectUidByLoginTime(Timestamp start, Timestamp end) {
+        return userMapper.selectUidByLoginTime(start, end);
+    }
+
     // user_role 部分
 
-    public boolean insertUserRole(int uid, int rid) {
-        return userRoleMapper.insert(uid, rid) == 1;
+    public void insertUserRole(int uid, int rid) {
+        userRoleMapper.insert(uid, rid);
     }
 
     public boolean deleteUserRole(int uid, int rid) {
