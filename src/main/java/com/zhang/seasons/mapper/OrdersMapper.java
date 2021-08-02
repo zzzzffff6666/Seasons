@@ -46,6 +46,13 @@ public interface OrdersMapper {
     List<Orders> selectByTime(Timestamp start, Timestamp end);
 
     @Select("select * " +
+            "from orders " +
+            "where created between #{start} and #{end} " +
+            "and state = #{state}")
+    @ResultType(Orders.class)
+    List<Orders> selectByTimeAndState(Timestamp start, Timestamp end, int state);
+
+    @Select("select * " +
             "from orders")
     @ResultType(Orders.class)
     List<Orders> selectAll();

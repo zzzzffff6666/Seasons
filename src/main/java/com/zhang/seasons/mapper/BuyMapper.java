@@ -50,4 +50,9 @@ public interface BuyMapper {
             "from buy")
     @ResultType(Buy.class)
     List<Buy> selectAll();
+
+    @Select("select count(*) " +
+            "from buy " +
+            "where wid = #{wid}")
+    int selectSellCount(int wid);
 }

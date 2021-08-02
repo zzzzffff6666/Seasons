@@ -31,7 +31,7 @@ public interface StyleMapper {
     @Update("update style " +
             "set weekly_num = 0, " +
             "daily_num = 0")
-    int eraseTimelyNum();
+    void eraseTimelyNum();
 
     @Select("select * " +
             "from style " +
@@ -43,7 +43,7 @@ public interface StyleMapper {
             "from style " +
             "where name like '%${name}%'")
     @ResultType(Style.class)
-    List<Style> selectByName(String name);
+    List<Style> searchByName(String name);
 
     @Select("select * " +
             "from style " +
