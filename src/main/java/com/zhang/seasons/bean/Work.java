@@ -19,7 +19,6 @@ public class Work {
     private float price;
     private float priceBiz;
     private String url;
-    private String type;
     private int state;
     private Timestamp created;
 }
