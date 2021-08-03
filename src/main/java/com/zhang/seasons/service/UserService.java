@@ -61,6 +61,12 @@ public class UserService {
         return userMapper.selectPhone(uid) != null;
     }
 
+    /**
+     * 通过UID查找用户
+     * @param uid UID
+     * @param eraseLevel 擦除等级：1擦除密码等私密信息，2擦除密码信息和余额信息
+     * @return 用户信息
+     */
     public User selectUserByUid(int uid, int eraseLevel) {
         User user = userMapper.selectByUid(uid);
         if (user != null) {
@@ -70,6 +76,12 @@ public class UserService {
         return user;
     }
 
+    /**
+     * 通过用户名查找用户
+     * @param name 用户名
+     * @param eraseLevel 擦除等级：1擦除密码等私密信息，2擦除密码信息和余额信息
+     * @return 用户信息
+     */
     public User selectUserByName(String name, int eraseLevel) {
         User user = userMapper.selectByName(name);
         if (user != null) {

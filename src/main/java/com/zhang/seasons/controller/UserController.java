@@ -5,8 +5,10 @@ import com.github.pagehelper.PageInfo;
 import com.zhang.seasons.bean.User;
 import com.zhang.seasons.http.APIMsg;
 import com.zhang.seasons.http.Result;
+import com.zhang.seasons.service.SubscriptionService;
 import com.zhang.seasons.service.UserService;
 import com.zhang.seasons.util.UserUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -21,12 +23,15 @@ import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.Map;
 
+@Slf4j
 @RestController
 public class UserController {
     private static final int userPageAmount = 30;
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private SubscriptionService subService;
 
     /**
      * 登陆
@@ -52,7 +57,7 @@ public class UserController {
             User user = userService.selectUserForLogin(principal);
             session.setAttribute("uid", user.getUid());
             session.setAttribute("name", user.getName());
-            user.eraseInfo();
+            user.erasePassword();
             userService.updateUserLoginTime(user.getUid(), new Timestamp(System.currentTimeMillis()));
             return Result.success(user);
         } catch (AuthenticationException e) {
@@ -69,9 +74,12 @@ public class UserController {
     @RequiresGuest
     public Result register(@RequestParam User user) {
         if (UserUtil.errorName(user.getName())) return Result.error(APIMsg.NAME_ERROR);
-        if (UserUtil.errorCredential(user.getPassword())) return Result.error(APIMsg.CREDENTIAL_ERROR);
-        if (user.getPhone() != null && UserUtil.errorPhone(user.getPhone())) return Result.error(APIMsg.PHONE_ERROR);
         if (userService.isNameExist(user.getName())) return Result.error(APIMsg.NAME_EXIST_ERROR);
+        if (UserUtil.errorCredential(user.getPassword())) return Result.error(APIMsg.CREDENTIAL_ERROR);
+        if (user.getPhone() != null) {
+            if (UserUtil.errorPhone(user.getPhone())) return Result.error(APIMsg.PHONE_ERROR);
+            if (userService.isPhoneExist(user.getPhone())) return Result.error(APIMsg.PHONE_EXIST_ERROR);
+        }
         String salt = UserUtil.getSalt();
         String encodedPassword = UserUtil.encrypt(user.getPassword(), user.getSalt());
         user.setSalt(salt);
@@ -104,7 +112,9 @@ public class UserController {
     @RequiresPermissions("user:update")
     public Result updateUserName(@RequestParam("name") String name, @RequestParam("phone") String phone, HttpSession session) {
         if (UserUtil.errorName(name)) return Result.error(APIMsg.NAME_ERROR);
+        if (userService.isNameExist(name)) return Result.error(APIMsg.NAME_EXIST_ERROR);
         if (UserUtil.errorPhone(phone)) return Result.error(APIMsg.PHONE_ERROR);
+        if (userService.isPhoneExist(phone)) return Result.error(APIMsg.PHONE_EXIST_ERROR);
         int uid = (int) session.getAttribute("uid");
         return userService.updateUserInfo(uid, name, phone) ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
     }
