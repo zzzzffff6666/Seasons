@@ -1,10 +1,12 @@
 package com.zhang.seasons.service;
 
 import com.zhang.seasons.bean.Work;
+import com.zhang.seasons.mapper.LaudMapper;
 import com.zhang.seasons.mapper.WorkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -14,6 +16,10 @@ public class WorkService {
 
     @Autowired
     private WorkMapper workMapper;
+    @Autowired
+    private LaudMapper laudMapper;
+
+    // Work 部分
 
     public boolean insertWork(Work work) {
         return workMapper.insert(work) == 1;
@@ -61,5 +67,31 @@ public class WorkService {
 
     public List<Work> selectAllWorkByAdmin(int[] sort) {
         return workMapper.selectAllByAdmin(SORT_SEQ[sort[0]] + SORT_TYPE[sort[1]]);
+    }
+
+    public List<Work> selectWorkByList(List<Integer> list) {
+        return workMapper.selectByList(list);
+    }
+
+    // Laud 部分
+
+    public boolean insertLaud(int uid, int wid, Timestamp created) {
+        return laudMapper.insert(uid, wid, created) == 1;
+    }
+
+    public boolean deleteLaud(int uid, int wid) {
+        return laudMapper.delete(uid, wid) == 1;
+    }
+
+    public boolean isLaud(int uid, int wid) {
+        return laudMapper.select(uid, wid) == 1;
+    }
+
+    public int selectLaudNum(int wid) {
+        return laudMapper.selectCount(wid);
+    }
+
+    public List<Integer> selectLaudList(int uid) {
+        return laudMapper.selectList(uid);
     }
 }

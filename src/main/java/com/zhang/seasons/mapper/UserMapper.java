@@ -45,7 +45,17 @@ public interface UserMapper {
     @Select("select count(*) " +
             "from user " +
             "where name = #{name}")
-    int selectName(String name);
+    int isNameExist(String name);
+
+    @Select("select count(*) " +
+            "from user " +
+            "where phone = #{phone}")
+    int isPhoneExist(String phone);
+
+    @Select("select phone " +
+            "from user " +
+            "where uid = #{uid}")
+    String selectPhone(int uid);
 
     @Select("select coin " +
             "from user " +

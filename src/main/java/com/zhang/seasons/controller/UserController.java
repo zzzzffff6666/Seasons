@@ -71,7 +71,7 @@ public class UserController {
         if (UserUtil.errorName(user.getName())) return Result.error(APIMsg.NAME_ERROR);
         if (UserUtil.errorCredential(user.getPassword())) return Result.error(APIMsg.CREDENTIAL_ERROR);
         if (user.getPhone() != null && UserUtil.errorPhone(user.getPhone())) return Result.error(APIMsg.PHONE_ERROR);
-        if (userService.isExist(user.getName())) return Result.error(APIMsg.NAME_EXIST_ERROR);
+        if (userService.isNameExist(user.getName())) return Result.error(APIMsg.NAME_EXIST_ERROR);
         String salt = UserUtil.getSalt();
         String encodedPassword = UserUtil.encrypt(user.getPassword(), user.getSalt());
         user.setSalt(salt);
@@ -138,7 +138,7 @@ public class UserController {
             String encrypt = UserUtil.encrypt(newP, salt);
             return userService.updateUserPassword(uid, encrypt, salt) ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
         }
-        return Result.error(APIMsg.PASSWORD_ERROR_2);
+        return Result.error(APIMsg.PASSWORD_ERROR);
     }
 
     @PutMapping("/user/active/{active}")

@@ -49,8 +49,16 @@ public class UserService {
         return userMapper.selectCoin(uid);
     }
 
-    public boolean isExist(String name) {
-        return userMapper.selectName(name) == 1;
+    public boolean isNameExist(String name) {
+        return userMapper.isNameExist(name) == 1;
+    }
+
+    public boolean isPhoneExist(String phone) {
+        return userMapper.isPhoneExist(phone) == 1;
+    }
+
+    public boolean hasPhone(int uid) {
+        return userMapper.selectPhone(uid) != null;
     }
 
     public User selectUserByUid(int uid, int eraseLevel) {

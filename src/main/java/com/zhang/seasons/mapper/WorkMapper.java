@@ -82,4 +82,15 @@ public interface WorkMapper {
             "order by #{sort}")
     @ResultType(Work.class)
     List<Work> selectAllByAdmin(String sort);
+
+    @Select("<script>" +
+            "select * " +
+            "from work " +
+            "where wid in " +
+            "<foreach item='item' collection='list' index='index' open='(' close=')' separator=','> " +
+            "#{item} " +
+            "</foreach> " +
+            "</script>")
+    @ResultType(Work.class)
+    List<Work> selectByList(@Param("list") List<Integer> list);
 }

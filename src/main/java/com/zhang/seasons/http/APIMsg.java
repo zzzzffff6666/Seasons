@@ -10,7 +10,8 @@ public interface APIMsg {
     String REGISTER_ERROR = "注册失败";
     String ACCOUNT_ERROR = "账户已被禁用";
     String NAME_EXIST_ERROR = "用户名已存在";
-    String PASSWORD_ERROR_2 = "密码错误";
+    String PHONE_EXIST_ERROR = "手机号已存在";
+    String PASSWORD_ERROR = "密码错误";
     String INSERT_ERROR = "插入失败";
     String DELETE_ERROR = "删除失败";
     String UPDATE_ERROR = "更新失败";
