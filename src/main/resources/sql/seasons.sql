@@ -88,8 +88,7 @@ CREATE TABLE `laud` (
   `created` datetime NOT NULL COMMENT '点赞时间',
   PRIMARY KEY (`uid`,`wid`),
   KEY `uid` (`uid`),
-  KEY `wid` (`wid`),
-  KEY `created` (`created` DESC)
+  KEY `wid` (`wid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -118,7 +117,6 @@ CREATE TABLE `message` (
   `read` tinyint(1) NOT NULL COMMENT '是否已读',
   `created` datetime NOT NULL COMMENT '时间',
   PRIMARY KEY (`receiver`,`sender`,`created`),
-  KEY `created` (`created` DESC),
   KEY `sender` (`sender`),
   KEY `receiver` (`receiver`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -257,10 +255,7 @@ CREATE TABLE `style` (
   `daily_num` int NOT NULL COMMENT '当日新增数量',
   `updated` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`sid`),
-  UNIQUE KEY `name` (`name`),
-  KEY `daily_num` (`daily_num`),
-  KEY `weekly_num` (`weekly_num`),
-  KEY `work_num` (`work_num` DESC)
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -274,13 +269,13 @@ LOCK TABLES `style` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `subscription`
+-- Table structure for table `subscribe`
 --
 
-DROP TABLE IF EXISTS `subscription`;
+DROP TABLE IF EXISTS `subscribe`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `subscription` (
+CREATE TABLE `subscribe` (
   `subscriber` int NOT NULL COMMENT '订阅者ID',
   `publisher` int NOT NULL COMMENT '创作者ID',
   `level` int NOT NULL COMMENT '订阅等级',
@@ -292,12 +287,12 @@ CREATE TABLE `subscription` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `subscription`
+-- Dumping data for table `subscribe`
 --
 
-LOCK TABLES `subscription` WRITE;
-/*!40000 ALTER TABLE `subscription` DISABLE KEYS */;
-/*!40000 ALTER TABLE `subscription` ENABLE KEYS */;
+LOCK TABLES `subscribe` WRITE;
+/*!40000 ALTER TABLE `subscribe` DISABLE KEYS */;
+/*!40000 ALTER TABLE `subscribe` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -319,8 +314,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`uid`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `phone` (`phone`),
-  KEY `active` (`active`),
-  KEY `login_time` (`login_time` DESC)
+  KEY `active` (`active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10001 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -381,8 +375,6 @@ CREATE TABLE `work` (
   `state` int NOT NULL COMMENT '作品状态：0正常，1待审核',
   `created` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`wid`),
-  KEY `created` (`created` DESC),
-  KEY `laud_num` (`laud_num` DESC),
   KEY `price` (`price`),
   KEY `title` (`title`),
   KEY `uid` (`uid`)
@@ -407,4 +399,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-03 19:48:17
+-- Dump completed on 2021-08-04 15:18:09

@@ -113,8 +113,8 @@ public class UserService {
 
     // user_role 部分
 
-    public void insertUserRole(int uid, int rid) {
-        userRoleMapper.insert(uid, rid);
+    public boolean insertUserRole(int uid, int rid) {
+        return userRoleMapper.insert(uid, rid) == 1;
     }
 
     public boolean deleteUserRole(int uid, int rid) {

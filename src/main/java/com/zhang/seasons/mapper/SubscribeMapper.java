@@ -1,49 +1,49 @@
 package com.zhang.seasons.mapper;
 
-import com.zhang.seasons.bean.Subscription;
+import com.zhang.seasons.bean.Subscribe;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
-public interface SubscriptionMapper {
-    @Insert("insert into subscription " +
+public interface SubscribeMapper {
+    @Insert("insert into subscribe " +
             "values(#{subscriber}, #{publisher}, #{level}, #{created})")
-    int insert(Subscription sub);
+    int insert(Subscribe sub);
 
-    @Delete("delete from subscription " +
+    @Delete("delete from subscribe " +
             "where subscriber = #{subscriber} " +
             "and publisher = #{publisher}")
     int delete(int subscriber, int publisher);
 
-    @Update("update subscription " +
+    @Update("update subscribe " +
             "set level = #{level} " +
             "where subscriber = #{subscriber} " +
             "and publisher = #{publisher}")
-    int update(Subscription sub);
+    int update(Subscribe sub);
 
     @Select("select * " +
-            "from subscription " +
+            "from subscribe " +
             "where subscriber = #{subscriber} " +
             "and publisher = #{publisher}")
-    @ResultType(Subscription.class)
-    Subscription select(int subscriber, int publisher);
+    @ResultType(Subscribe.class)
+    Subscribe select(int subscriber, int publisher);
 
     @Select("select * " +
-            "from subscription " +
+            "from subscribe " +
             "where publisher = #{publisher} " +
             "order by created desc")
-    @ResultType(Subscription.class)
-    List<Subscription> selectByPublisher(int publisher);
+    @ResultType(Subscribe.class)
+    List<Subscribe> selectByPublisher(int publisher);
 
     @Select("select * " +
-            "from subscription " +
+            "from subscribe " +
             "where subscriber = #{subscriber} " +
             "order by created desc")
-    @ResultType(Subscription.class)
-    List<Subscription> selectBySubscriber(int subscriber);
+    @ResultType(Subscribe.class)
+    List<Subscribe> selectBySubscriber(int subscriber);
 
     @Select("select * " +
-            "from subscription")
-    @ResultType(Subscription.class)
-    List<Subscription> selectAll();
+            "from subscribe")
+    @ResultType(Subscribe.class)
+    List<Subscribe> selectAll();
 }

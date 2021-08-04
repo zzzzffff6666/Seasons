@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Subscription {
+public class Subscribe {
     private int subscriber;
     private int publisher;
     private int level;

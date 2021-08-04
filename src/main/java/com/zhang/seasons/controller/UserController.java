@@ -2,10 +2,12 @@ package com.zhang.seasons.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhang.seasons.bean.Subscribe;
 import com.zhang.seasons.bean.User;
 import com.zhang.seasons.http.APIMsg;
 import com.zhang.seasons.http.Result;
-import com.zhang.seasons.service.SubscriptionService;
+import com.zhang.seasons.service.RoleService;
+import com.zhang.seasons.service.SubscribeService;
 import com.zhang.seasons.service.UserService;
 import com.zhang.seasons.util.UserUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +23,23 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RestController
 public class UserController {
-    private static final int userPageAmount = 30;
+    private static final int USER_PAGE_AMOUNT = 30;
+    private static final int SUBSCRIBE_PAGE_AMOUNT = 50;
 
     @Autowired
     private UserService userService;
     @Autowired
-    private SubscriptionService subService;
+    private RoleService roleService;
+    @Autowired
+    private SubscribeService subService;
+
+    //User 部分
 
     /**
      * 登陆
@@ -177,7 +185,7 @@ public class UserController {
     public Result selectUserByActive(@PathVariable("active") boolean active,
                                      @PathVariable(value = "page", required = false) Integer page) {
         if (page == null) page = 1;
-        PageHelper.startPage(page, userPageAmount);
+        PageHelper.startPage(page, USER_PAGE_AMOUNT);
         PageInfo<User> list = new PageInfo<>(userService.selectUserByActive(active));
         return Result.success(list);
     }
@@ -186,8 +194,97 @@ public class UserController {
     @RequiresPermissions("user:*")
     public Result selectAllUser(@PathVariable(value = "page", required = false) Integer page) {
         if (page == null) page = 1;
-        PageHelper.startPage(page, userPageAmount);
+        PageHelper.startPage(page, USER_PAGE_AMOUNT);
         PageInfo<User> list = new PageInfo<>(userService.selectAllUser());
+        return Result.success(list);
+    }
+
+    // User_Role 部分
+
+    @PostMapping("/user_role")
+    public Result insertUserRole(@RequestParam("uid") int uid, @RequestParam("rid") int rid) {
+        boolean suc = userService.insertUserRole(uid, rid);
+        return suc ? Result.success() : Result.error(APIMsg.INSERT_ERROR);
+    }
+
+    @DeleteMapping("/user_role")
+    public Result deleteUserRole(@RequestParam("uid") int uid, @RequestParam("rid") int rid) {
+        boolean suc = userService.deleteUserRole(uid, rid);
+        return suc ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
+    }
+
+    @GetMapping("/user_role/{uid}")
+    public Result selectRoleByUid(@PathVariable("uid") int uid) {
+        List<Integer> roleIdList = userService.selectRoleByUid(uid);
+        return Result.success(roleService.selectRoleByList(roleIdList));
+    }
+
+    // Subscription 部分
+
+    @PostMapping("/subscribe")
+    public Result insertSubscribe(@RequestParam("publisher") int publisher,
+                                     @RequestParam("level") int level, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        Subscribe subscribe = new Subscribe();
+        subscribe.setSubscriber(uid);
+        subscribe.setPublisher(publisher);
+        subscribe.setLevel(level);
+        subscribe.setCreated(new Timestamp(System.currentTimeMillis()));
+        boolean suc = subService.insertSubscribe(subscribe);
+        return suc ? Result.success() : Result.error(APIMsg.INSERT_ERROR);
+    }
+
+    @DeleteMapping("/subscribe")
+    public Result deleteSubscribe(@RequestParam("publisher") int publisher, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        boolean suc = subService.deleteSubscribe(uid, publisher);
+        return suc ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
+    }
+
+    @PutMapping("/subscribe/level")
+    public Result updateSubscribeLevel(@RequestParam("publisher") int publisher,
+                                       @RequestParam("level") int level, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        Subscribe subscribe = new Subscribe();
+        subscribe.setSubscriber(uid);
+        subscribe.setPublisher(publisher);
+        subscribe.setLevel(level);
+        boolean suc = subService.updateSubscribeLevel(subscribe);
+        return suc ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
+    }
+
+    @GetMapping("/subscribe/{publisher}")
+    public Result selectSubscribe(@PathVariable("publisher") int publisher, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        Subscribe subscribe = subService.selectSubscribe(uid, publisher);
+        return Result.success(subscribe);
+    }
+
+    @GetMapping({"/subscribe/other/list", "/subscribe/other/list/{page}"})
+    public Result selectSubscribeByPublisher(@PathVariable(value = "page", required = false) Integer page,
+                                             HttpSession session) {
+        if (page == null) page = 1;
+        int uid = (int) session.getAttribute("uid");
+        PageHelper.startPage(page, SUBSCRIBE_PAGE_AMOUNT);
+        PageInfo<Subscribe> list = new PageInfo<>(subService.selectSubscribeByPublisher(uid));
+        return Result.success(list);
+    }
+
+    @GetMapping({"/subscribe/my/list", "/subscribe/my/list/{page}"})
+    public Result selectSubscribeBySubscriber(@PathVariable(value = "page", required = false) Integer page,
+                                              HttpSession session) {
+        if (page == null) page = 1;
+        int uid = (int) session.getAttribute("uid");
+        PageHelper.startPage(page, SUBSCRIBE_PAGE_AMOUNT);
+        PageInfo<Subscribe> list = new PageInfo<>(subService.selectSubscribeBySubscriber(uid));
+        return Result.success(list);
+    }
+
+    @GetMapping({"/subscribe/all", "/subscribe/all/{page}"})
+    public Result selectAllSubscribe(@PathVariable(value = "page", required = false) Integer page) {
+        if (page == null) page = 1;
+        PageHelper.startPage(page, SUBSCRIBE_PAGE_AMOUNT);
+        PageInfo<Subscribe> list = new PageInfo<>(subService.selectAllSubscribe());
         return Result.success(list);
     }
 }
