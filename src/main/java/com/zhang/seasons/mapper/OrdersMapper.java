@@ -7,8 +7,8 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface OrdersMapper {
-    @Insert("insert into orders(uid, coin, state, created) " +
-            "values(#{uid}, #{coin}, 0, #{created})")
+    @Insert("insert into orders(oid, uid, coin, state, created) " +
+            "values(null, #{uid}, #{coin}, 0, #{created})")
     int insert(Orders orders);
 
     @Delete("delete from orders " +

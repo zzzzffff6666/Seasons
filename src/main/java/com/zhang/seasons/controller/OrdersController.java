@@ -1,5 +1,6 @@
 package com.zhang.seasons.controller;
 
+import com.zhang.seasons.http.Result;
 import com.zhang.seasons.service.OrdersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,4 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrdersController {
     @Autowired
     private OrdersService ordersService;
+
+//    public Result insertOrders() {
+//
+//    }
+//
+//    public Result deleteOrders() {
+//
+//    }
+//
+//    public Result updateOrderState() {
+//
+//    }
 }

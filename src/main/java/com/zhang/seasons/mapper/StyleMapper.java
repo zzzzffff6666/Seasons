@@ -7,13 +7,18 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface StyleMapper {
-    @Insert("insert into style(name, work_num, weekly_num, daily_num, updated) " +
-            "values(#{name}, 0, 0, 0, #{updated})")
+    @Insert("insert into style(sid, name, work_num, weekly_num, daily_num, updated) " +
+            "values(null, #{manager}, #{name}, 0, 0, 0, #{updated})")
     int insert(Style style);
 
     @Delete("delete from style " +
             "where sid = #{sid}")
     int delete(int sid);
+
+    @Update("update style " +
+            "set manager = #{manager} " +
+            "where sid = #{sid}")
+    int updateManager(int sid, int manager);
 
     @Update("update style " +
             "set name = #{name} " +
@@ -33,6 +38,11 @@ public interface StyleMapper {
             "daily_num = 0")
     void eraseTimelyNum();
 
+    @Select("select manager " +
+            "from style " +
+            "where sid = #{sid}")
+    int selectManager(int sid);
+
     @Select("select * " +
             "from style " +
             "where sid = #{sid}")
@@ -44,6 +54,11 @@ public interface StyleMapper {
             "where name like '%${name}%'")
     @ResultType(Style.class)
     List<Style> searchByName(String name);
+
+    @Select("select * " +
+            "from style " +
+            "where manager = #{manager}")
+    List<Style> selectByManager(int manager);
 
     @Select("select * " +
             "from style " +

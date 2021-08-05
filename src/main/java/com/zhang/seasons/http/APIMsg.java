@@ -18,4 +18,5 @@ public interface APIMsg {
     String PARAMETER_ERROR = "参数错误";
     String UNKNOWN_ERROR = "未知错误";
     String COIN_LEFT_ERROR = "账户中有余额，请提现后再注销账户";
+    String MANAGE_MAX_ERROR = "管理分区已达上限";
 }

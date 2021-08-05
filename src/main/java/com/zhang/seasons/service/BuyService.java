@@ -2,11 +2,14 @@ package com.zhang.seasons.service;
 
 import com.zhang.seasons.bean.Buy;
 import com.zhang.seasons.mapper.BuyMapper;
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BuyService {
@@ -41,7 +44,11 @@ public class BuyService {
         return buyMapper.selectAll();
     }
 
-    public int selectWorkSellCount(int wid) {
-        return buyMapper.selectSellCount(wid);
+    public Map<String, Object> selectWorkSell(int wid) {
+        Pair<Integer, Float> sell = buyMapper.selectSell(wid);
+        Map<String, Object> result = new HashMap<>();
+        result.put("amount", sell.getKey());
+        result.put("total", sell.getValue());
+        return result;
     }
 }

@@ -4,6 +4,7 @@ import com.zhang.seasons.bean.User;
 import com.zhang.seasons.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -17,8 +18,9 @@ public class UserService {
 
     // user 部分
 
+    @Transactional
     public boolean insertUser(User user) {
-        return userMapper.insert(user) == 1;
+        return userMapper.insert(user) == 1 && userRoleMapper.insert(user.getUid(), 1) == 1;
     }
 
     public boolean deleteUser(int uid) {

@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Style {
     private int sid;
+    private int manager;
     private String name;
     private int workNum;
     private int weeklyNum;

@@ -92,18 +92,14 @@ public class UserController {
         String encodedPassword = UserUtil.encrypt(user.getPassword(), user.getSalt());
         user.setSalt(salt);
         user.setPassword(encodedPassword);
+        // 注册的同时给该用户分配普通用户角色
         boolean suc = userService.insertUser(user);
-        if (suc) {
-            // 注册成功给该用户分配普通用户角色
-            userService.insertUserRole(user.getUid(), 1);
-            return Result.success();
-        }
-        else return Result.error(APIMsg.REGISTER_ERROR);
+        return suc ? Result.success() : Result.error(APIMsg.REGISTER_ERROR);
     }
 
-    @DeleteMapping("/user/{uid}")
+    @DeleteMapping("/user_admin")
     @RequiresPermissions("user:*")
-    public Result deleteUserByAdmin(@PathVariable("uid") int uid) {
+    public Result deleteUserAsAdmin(@RequestParam("uid") int uid) {
         return userService.deleteUser(uid) ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
     }
 
@@ -159,11 +155,12 @@ public class UserController {
         return Result.error(APIMsg.PASSWORD_ERROR);
     }
 
-    @PutMapping("/user/active/{active}")
+    @PutMapping("/user/active")
     @RequiresPermissions("user:*")
-    public Result updateUserActive(@PathVariable("active") boolean active, HttpSession session) {
-        int uid = (int) session.getAttribute("uid");
-        return userService.updateUserActive(uid, active) ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
+    public Result updateUserActive(@RequestParam("uid") int uid, @RequestParam("active") boolean active,
+                                   HttpSession session) {
+        boolean suc = userService.updateUserActive(uid, active);
+        return suc ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
     }
 
     @GetMapping("/user/uid/{uid}")
@@ -180,7 +177,7 @@ public class UserController {
         return Result.success(user);
     }
 
-    @GetMapping({"/user/active/{active}", "/user/active/{active}/{page}"})
+    @GetMapping({"/user/list/active/{active}", "/user/list/active/{active}/{page}"})
     @RequiresPermissions("user:*")
     public Result selectUserByActive(@PathVariable("active") boolean active,
                                      @PathVariable(value = "page", required = false) Integer page) {
@@ -260,7 +257,7 @@ public class UserController {
         return Result.success(subscribe);
     }
 
-    @GetMapping({"/subscribe/other/list", "/subscribe/other/list/{page}"})
+    @GetMapping({"/subscribe/list/publisher", "/subscribe/list/publisher/{page}"})
     public Result selectSubscribeByPublisher(@PathVariable(value = "page", required = false) Integer page,
                                              HttpSession session) {
         if (page == null) page = 1;
@@ -270,7 +267,7 @@ public class UserController {
         return Result.success(list);
     }
 
-    @GetMapping({"/subscribe/my/list", "/subscribe/my/list/{page}"})
+    @GetMapping({"/subscribe/list/subscriber", "/subscribe/list/subscriber/{page}"})
     public Result selectSubscribeBySubscriber(@PathVariable(value = "page", required = false) Integer page,
                                               HttpSession session) {
         if (page == null) page = 1;

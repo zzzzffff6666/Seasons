@@ -41,6 +41,10 @@ public class WorkService {
         return workMapper.updateState(wid, state) == 1;
     }
 
+    public int selectWorkUid(int wid) {
+        return workMapper.selectUid(wid);
+    }
+
     public Work selectWork(int wid) {
         return workMapper.select(wid);
     }

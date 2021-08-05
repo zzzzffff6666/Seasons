@@ -34,6 +34,11 @@ public interface WorkMapper {
             "where wid = #{wid}")
     int updateState(int wid, int state);
 
+    @Select("select uid " +
+            "from work " +
+            "where wid = #{wid}")
+    int selectUid(int wid);
+
     @Select("select * " +
             "from work " +
             "where wid = #{wid}")
@@ -44,7 +49,7 @@ public interface WorkMapper {
             "from work " +
             "where state = 0 " +
             "and title like '%${title}%' " +
-            "order by #{sort}")
+            "order by ${sort}")
     @ResultType(Work.class)
     List<Work> selectByTitle(String title, String sort);
 
@@ -52,34 +57,34 @@ public interface WorkMapper {
             "from work " +
             "where state = 0 " +
             "and style = #{style} " +
-            "order by #{sort}")
+            "order by ${sort}")
     @ResultType(Work.class)
     List<Work> selectByStyle(String style, String sort);
 
     @Select("select * " +
             "from work " +
             "where uid = #{uid} " +
-            "order by #{sort}")
+            "order by ${sort}")
     @ResultType(Work.class)
     List<Work> selectByUid(int uid, String sort);
 
     @Select("select * " +
             "from work " +
             "where state = 0 " +
-            "order by #{sort}")
+            "order by ${sort}")
     @ResultType(Work.class)
     List<Work> selectAll(String sort);
 
     @Select("select * " +
             "from work " +
             "where state = 1 " +
-            "order by #{sort}")
+            "order by ${sort}")
     @ResultType(Work.class)
     List<Work> selectDisapprove(String sort);
 
     @Select("select * " +
             "from work " +
-            "order by #{sort}")
+            "order by ${sort}")
     @ResultType(Work.class)
     List<Work> selectAllByAdmin(String sort);
 

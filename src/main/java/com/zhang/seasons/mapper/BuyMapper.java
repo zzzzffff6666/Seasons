@@ -1,6 +1,7 @@
 package com.zhang.seasons.mapper;
 
 import com.zhang.seasons.bean.Buy;
+import javafx.util.Pair;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.ResultType;
@@ -51,8 +52,8 @@ public interface BuyMapper {
     @ResultType(Buy.class)
     List<Buy> selectAll();
 
-    @Select("select count(*) " +
+    @Select("select count(*), sum(price) " +
             "from buy " +
             "where wid = #{wid}")
-    int selectSellCount(int wid);
+    Pair<Integer, Float> selectSell(int wid);
 }
