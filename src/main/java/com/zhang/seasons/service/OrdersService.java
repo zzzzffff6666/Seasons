@@ -45,6 +45,10 @@ public class OrdersService {
         return ordersMapper.selectByTimeAndState(start, end, state);
     }
 
+    public List<Orders> selectOrdersByState(int state) {
+        return ordersMapper.selectByState(state);
+    }
+
     public List<Orders> selectAllOrders() {
         return ordersMapper.selectAll();
     }

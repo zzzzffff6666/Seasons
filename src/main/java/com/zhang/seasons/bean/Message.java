@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Message {
+    private long mid;
     private int receiver;
     private int sender;
     private String senderName;

@@ -4,14 +4,17 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhang.seasons.bean.Buy;
 import com.zhang.seasons.bean.Style;
+import com.zhang.seasons.bean.Work;
 import com.zhang.seasons.http.APIMsg;
 import com.zhang.seasons.http.Result;
 import com.zhang.seasons.service.BuyService;
 import com.zhang.seasons.service.StyleService;
+import com.zhang.seasons.service.UserService;
 import com.zhang.seasons.service.WorkService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -25,6 +28,8 @@ public class WorkController {
     private static final int STYLE_RECOMMEND_AMOUNT = 10;
     private static final int BUY_PAGE_AMOUNT = 40;
 
+    @Autowired
+    private UserService userService;
     @Autowired
     private StyleService styleService;
     @Autowired
@@ -130,29 +135,62 @@ public class WorkController {
 
     // Buy 部分
 
-    @PostMapping("/buy")
-    public Result insertBuy(@RequestParam Map<String, Object> params, HttpSession session) {
+    @Transactional
+    @PostMapping("/buy/balance")
+    public Result insertBuyWithBalance(@RequestParam Map<String, Object> params, HttpSession session) {
         int uid = (int) session.getAttribute("uid");
+        int wid = (int) params.get("wid");
+        Work work = workService.selectWork(wid);
+        float coin = userService.selectUserCoin(uid);
+        String way = params.get("way").toString();
+        int type = (int) params.get("type");
+        if (type == 0 && coin < work.getPrice()) return Result.error(APIMsg.BALANCE_NOT_ENOUGH_ERROR);
+        if (type == 1 && coin < work.getPriceBiz()) return Result.error(APIMsg.BALANCE_NOT_ENOUGH_ERROR);
         Buy buy = new Buy();
         buy.setUid(uid);
-        buy.setWid((int) params.get("wid"));
-        buy.setPrice((float) params.get("price"));
-        buy.setType((int) params.get("type"));
-        buy.setWay(params.get("way").toString());
+        buy.setWid(wid);
+        buy.setPrice(type == 0 ? work.getPrice() : work.getPriceBiz());
+        buy.setType(type);
+        buy.setWay(way);
         buy.setCreated(new Timestamp(System.currentTimeMillis()));
         boolean suc = buyService.insertBuy(buy);
+        suc &= userService.updateUserCoin(uid, 0 - buy.getPrice());
+        suc &= userService.updateUserCoin(work.getUid(), buy.getPrice() * 0.9f);
         return suc ? Result.success() : Result.error(APIMsg.INSERT_ERROR);
     }
 
+    // 微信支付（暂时未实现）
+    @PostMapping("/buy/wx_pay")
+    public Result insertBuyWithWXPay() {
+        return Result.error(APIMsg.INSERT_ERROR);
+    }
+
+    @Transactional
     @DeleteMapping("/buy")
     @RequiresPermissions("buy:*")
     public Result deleteBuy(@RequestParam("uid") int uid, @RequestParam("wid") int wid) {
+        Buy buy = buyService.selectBuy(uid, wid);
+        if (buy.getType() == 0) return Result.error(APIMsg.COMMON_REFUND_ERROR);
+        else {
+            long now = System.currentTimeMillis();
+            if (now - buy.getCreated().getTime() > 7 * 1000 * 3600 * 24) {
+                return Result.error(APIMsg.BUSINESS_REFUND_ERROR);
+            }
+        }
         boolean suc = buyService.deleteBuy(uid, wid);
+        suc &= userService.updateUserCoin(uid, buy.getPrice() * 0.9f);
+        suc &= userService.updateUserCoin(workService.selectWork(wid).getUid(), 0 - (buy.getPrice() * 0.9f));
         return suc ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
     }
 
-    @GetMapping("/buy/{uid}/{wid}")
-    public Result selectBuy(@PathVariable("uid") int uid, @PathVariable("wid") int wid) {
+    @GetMapping("/buy/{wid}")
+    public Result selectBuy(@PathVariable("wid") int wid, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        return Result.success(buyService.selectBuy(uid, wid));
+    }
+
+    @GetMapping("/buy-admin/{uid}/{wid}")
+    public Result selectBuyAsAdmin(@PathVariable("uid") int uid, @PathVariable("wid") int wid) {
         return Result.success(buyService.selectBuy(uid, wid));
     }
 
@@ -165,7 +203,7 @@ public class WorkController {
         return Result.success(list);
     }
 
-    @GetMapping({"/buy/list/uid_admin/{uid}", "/buy/list/uid_admin/{uid}/{page}"})
+    @GetMapping({"/buy-admin/list/uid/{uid}", "/buy-admin/list/uid/{uid}/{page}"})
     public Result selectBuyByUidAsAdmin(@PathVariable("uid") int uid,
                                         @PathVariable(value = "page", required = false) Integer page) {
         if (page == null) page = 1;
@@ -186,7 +224,7 @@ public class WorkController {
         return Result.success(list);
     }
 
-    @GetMapping({"/buy/list/wid_admin/{wid}", "/buy/list/wid_admin/{wid}/{page}"})
+    @GetMapping({"/buy-admin/list/wid/{wid}", "/buy-admin/list/wid/{wid}/{page}"})
     public Result selectBuyByWidAsAdmin(@PathVariable("wid") int wid,
                                  @PathVariable(value = "page", required = false) Integer page) {
         if (page == null) page = 1;
@@ -220,5 +258,4 @@ public class WorkController {
         if (uid != workService.selectWorkUid(wid)) return Result.error(APIMsg.AUTH_ERROR);
         return Result.success(buyService.selectWorkSell(wid));
     }
-
 }

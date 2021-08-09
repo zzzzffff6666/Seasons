@@ -28,14 +28,16 @@ public interface OrdersMapper {
 
     @Select("select * " +
             "from orders " +
-            "where uid = #{uid}")
+            "where uid = #{uid} " +
+            "order by created desc")
     @ResultType(Orders.class)
     List<Orders> selectByUid(int uid);
 
     @Select("select * " +
             "from orders " +
             "where uid = #{uid} " +
-            "and state = #{state}")
+            "and state = #{state} " +
+            "order by created desc")
     @ResultType(Orders.class)
     List<Orders> selectByUidAndState(int uid, int state);
 
@@ -53,7 +55,14 @@ public interface OrdersMapper {
     List<Orders> selectByTimeAndState(Timestamp start, Timestamp end, int state);
 
     @Select("select * " +
-            "from orders")
+            "from orders " +
+            "where state = #{state} " +
+            "order by created desc")
+    List<Orders> selectByState(int state);
+
+    @Select("select * " +
+            "from orders " +
+            "order by created desc")
     @ResultType(Orders.class)
     List<Orders> selectAll();
 }

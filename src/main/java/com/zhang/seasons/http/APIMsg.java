@@ -19,4 +19,7 @@ public interface APIMsg {
     String UNKNOWN_ERROR = "未知错误";
     String COIN_LEFT_ERROR = "账户中有余额，请提现后再注销账户";
     String MANAGE_MAX_ERROR = "管理分区已达上限";
+    String BALANCE_NOT_ENOUGH_ERROR = "余额不足";
+    String COMMON_REFUND_ERROR = "非商用购买不支持退款";
+    String BUSINESS_REFUND_ERROR = "商用购买7天后无法退款";
 }

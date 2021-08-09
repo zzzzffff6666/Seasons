@@ -97,7 +97,7 @@ public class UserController {
         return suc ? Result.success() : Result.error(APIMsg.REGISTER_ERROR);
     }
 
-    @DeleteMapping("/user_admin")
+    @DeleteMapping("/user-admin")
     @RequiresPermissions("user:*")
     public Result deleteUserAsAdmin(@RequestParam("uid") int uid) {
         return userService.deleteUser(uid) ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
