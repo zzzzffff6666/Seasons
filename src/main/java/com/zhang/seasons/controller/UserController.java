@@ -29,8 +29,8 @@ import java.util.Map;
 @Slf4j
 @RestController
 public class UserController {
-    private static final int USER_PAGE_AMOUNT = 30;
-    private static final int SUBSCRIBE_PAGE_AMOUNT = 50;
+    private static final int USER_PAGE_AMOUNT = 20;
+    private static final int SUBSCRIBE_PAGE_AMOUNT = 20;
 
     @Autowired
     private UserService userService;
@@ -270,8 +270,8 @@ public class UserController {
     @GetMapping({"/subscribe/list/subscriber", "/subscribe/list/subscriber/{page}"})
     public Result selectSubscribeBySubscriber(@PathVariable(value = "page", required = false) Integer page,
                                               HttpSession session) {
-        if (page == null) page = 1;
         int uid = (int) session.getAttribute("uid");
+        if (page == null) page = 1;
         PageHelper.startPage(page, SUBSCRIBE_PAGE_AMOUNT);
         PageInfo<Subscribe> list = new PageInfo<>(subService.selectSubscribeBySubscriber(uid));
         return Result.success(list);

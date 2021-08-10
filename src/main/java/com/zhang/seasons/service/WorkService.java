@@ -1,10 +1,12 @@
 package com.zhang.seasons.service;
 
+import com.zhang.seasons.bean.Laud;
 import com.zhang.seasons.bean.Work;
 import com.zhang.seasons.mapper.LaudMapper;
 import com.zhang.seasons.mapper.WorkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -29,7 +31,7 @@ public class WorkService {
         return workMapper.delete(wid) == 1;
     }
 
-    public boolean updateWork(Work work) {
+    public boolean updateWorkInfo(Work work) {
         return workMapper.update(work) == 1;
     }
 
@@ -41,8 +43,8 @@ public class WorkService {
         return workMapper.updateState(wid, state) == 1;
     }
 
-    public int selectWorkUid(int wid) {
-        return workMapper.selectUid(wid);
+    public int selectWorkCreator(int wid) {
+        return workMapper.selectCreator(wid);
     }
 
     public Work selectWork(int wid) {
@@ -57,8 +59,8 @@ public class WorkService {
         return workMapper.selectByStyle(style, SORT_SEQ[sort[0]] + SORT_TYPE[sort[1]]);
     }
 
-    public List<Work> selectWorkByUid(int uid, int[] sort) {
-        return workMapper.selectByUid(uid, SORT_SEQ[sort[0]] + SORT_TYPE[sort[1]]);
+    public List<Work> selectWorkByCreator(int creator, int[] sort) {
+        return workMapper.selectByCreator(creator, SORT_SEQ[sort[0]] + SORT_TYPE[sort[1]]);
     }
 
     public List<Work> selectAllWork(int[] sort) {
@@ -69,8 +71,8 @@ public class WorkService {
         return workMapper.selectDisapprove(SORT_SEQ[sort[0]] + SORT_TYPE[sort[1]]);
     }
 
-    public List<Work> selectAllWorkByAdmin(int[] sort) {
-        return workMapper.selectAllByAdmin(SORT_SEQ[sort[0]] + SORT_TYPE[sort[1]]);
+    public List<Work> selectAllWorkAsAdmin(int[] sort) {
+        return workMapper.selectAllAsAdmin(SORT_SEQ[sort[0]] + SORT_TYPE[sort[1]]);
     }
 
     public List<Work> selectWorkByList(List<Integer> list) {
@@ -79,12 +81,14 @@ public class WorkService {
 
     // Laud 部分
 
-    public boolean insertLaud(int uid, int wid, Timestamp created) {
-        return laudMapper.insert(uid, wid, created) == 1;
+    @Transactional
+    public boolean insertLaud(Laud laud) {
+        return laudMapper.insert(laud) == 1 && workMapper.updateLaud(laud.getWid(), 1) == 1;
     }
 
+    @Transactional
     public boolean deleteLaud(int uid, int wid) {
-        return laudMapper.delete(uid, wid) == 1;
+        return laudMapper.delete(uid, wid) == 1 && workMapper.updateLaud(wid, -1) == 1;
     }
 
     public boolean isLaud(int uid, int wid) {
@@ -95,7 +99,7 @@ public class WorkService {
         return laudMapper.selectCount(wid);
     }
 
-    public List<Integer> selectLaudList(int uid) {
+    public List<Laud> selectLaudList(int uid) {
         return laudMapper.selectList(uid);
     }
 }

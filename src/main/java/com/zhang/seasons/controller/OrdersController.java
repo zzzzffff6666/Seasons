@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @Slf4j
 @RestController
 public class OrdersController {
-    private static final int ORDERS_PAGE_AMOUNT = 30;
+    private static final int ORDERS_PAGE_AMOUNT = 20;
 
     @Autowired
     private OrdersService ordersService;

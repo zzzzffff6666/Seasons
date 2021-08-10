@@ -26,8 +26,8 @@ public class MessageService {
         return messageMapper.delete(mid) == 1;
     }
 
-    public boolean updateMessageRead(Message message) {
-        return messageMapper.updateRead(message) == 1;
+    public boolean updateMessageRead(long mid) {
+        return messageMapper.updateRead(mid) == 1;
     }
 
     public boolean updateAllMessageRead(int receiver) {

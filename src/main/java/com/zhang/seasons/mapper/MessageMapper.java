@@ -27,7 +27,7 @@ public interface MessageMapper {
     @Update("update message " +
             "set read = 1 " +
             "where mid = #{mid}")
-    int updateRead(Message message);
+    int updateRead(long mid);
 
     @Update("update message " +
             "set read = 1 " +

@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface WorkMapper {
     @Insert("insert into work " +
-            "values(null, #{uid}, #{style}, #{title}, #{content}, #{laudNum}" +
-            "#{price}, #{priceBiz}, #{url}, #{state}, #{created})")
+            "values(null, #{creator}, #{creatorName}, #{style}, #{title}, #{content}, " +
+            "#{laudNum}, #{price}, #{priceBiz}, #{url}, #{state}, #{created})")
     int insert(Work work);
 
     @Delete("delete from work " +
@@ -16,8 +16,7 @@ public interface WorkMapper {
     int delete(int wid);
 
     @Update("update work " +
-            "set sid = #{sid}, " +
-            "style = #{style}, " +
+            "set style = #{style}, " +
             "title = #{title}, " +
             "content = #{content}, " +
             "price = #{price}, " +
@@ -34,10 +33,10 @@ public interface WorkMapper {
             "where wid = #{wid}")
     int updateState(int wid, int state);
 
-    @Select("select uid " +
+    @Select("select creator " +
             "from work " +
             "where wid = #{wid}")
-    int selectUid(int wid);
+    int selectCreator(int wid);
 
     @Select("select * " +
             "from work " +
@@ -63,10 +62,10 @@ public interface WorkMapper {
 
     @Select("select * " +
             "from work " +
-            "where uid = #{uid} " +
+            "where creator = #{creator} " +
             "order by ${sort}")
     @ResultType(Work.class)
-    List<Work> selectByUid(int uid, String sort);
+    List<Work> selectByCreator(int creator, String sort);
 
     @Select("select * " +
             "from work " +
@@ -86,7 +85,7 @@ public interface WorkMapper {
             "from work " +
             "order by ${sort}")
     @ResultType(Work.class)
-    List<Work> selectAllByAdmin(String sort);
+    List<Work> selectAllAsAdmin(String sort);
 
     @Select("<script>" +
             "select * " +

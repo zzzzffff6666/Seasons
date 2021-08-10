@@ -2,9 +2,11 @@ package com.zhang.seasons.service;
 
 import com.zhang.seasons.bean.Buy;
 import com.zhang.seasons.mapper.BuyMapper;
+import com.zhang.seasons.mapper.UserMapper;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -15,13 +17,23 @@ import java.util.Map;
 public class BuyService {
     @Autowired
     private BuyMapper buyMapper;
+    @Autowired
+    private UserMapper userMapper;
 
-    public boolean insertBuy(Buy buy) {
-        return buyMapper.insert(buy) == 1;
+    @Transactional
+    public boolean insertBuy(Buy buy, int creator) {
+        boolean suc = buyMapper.insert(buy) == 1;
+        suc &= userMapper.updateCoin(buy.getUid(), 0 - buy.getPrice()) == 1;
+        suc &= userMapper.updateCoin(creator, buy.getPrice() * 0.9f) == 1;
+        return suc;
     }
 
-    public boolean deleteBuy(int uid, int wid) {
-        return buyMapper.delete(uid, wid) == 1;
+    @Transactional
+    public boolean deleteBuy(Buy buy, int creator) {
+        boolean suc = buyMapper.delete(buy.getUid(), buy.getWid()) == 1;
+        suc &= userMapper.updateCoin(buy.getUid(), buy.getPrice() * 0.9f) == 1;
+        suc &= userMapper.updateCoin(creator, 0 - (buy.getPrice() * 0.9f)) == 1;
+        return suc;
     }
 
     public Buy selectBuy(int uid, int wid) {

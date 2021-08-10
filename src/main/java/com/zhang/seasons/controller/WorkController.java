@@ -3,6 +3,7 @@ package com.zhang.seasons.controller;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhang.seasons.bean.Buy;
+import com.zhang.seasons.bean.Laud;
 import com.zhang.seasons.bean.Style;
 import com.zhang.seasons.bean.Work;
 import com.zhang.seasons.http.APIMsg;
@@ -14,7 +15,6 @@ import com.zhang.seasons.service.WorkService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -25,8 +25,9 @@ import java.util.Map;
 @RestController
 public class WorkController {
     private static final int STYLE_PAGE_AMOUNT = 20;
-    private static final int STYLE_RECOMMEND_AMOUNT = 10;
-    private static final int BUY_PAGE_AMOUNT = 40;
+    private static final int STYLE_RECOMMEND_AMOUNT = 20;
+    private static final int WORK_PAGE_AMOUNT = 20;
+    private static final int BUY_PAGE_AMOUNT = 20;
 
     @Autowired
     private UserService userService;
@@ -131,11 +132,143 @@ public class WorkController {
 
     // Work 部分
 
+    @PostMapping("/work")
+    public Result insertWork(@RequestParam Work work, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        String name = (String) session.getAttribute("name");
+        work.setCreator(uid);
+        work.setCreatorName(name);
+        work.setLaudNum(0);
+        work.setState(0);
+        work.setCreated(new Timestamp(System.currentTimeMillis()));
+        boolean suc = workService.insertWork(work);
+        return suc ? Result.success() : Result.error(APIMsg.INSERT_ERROR);
+    }
 
+    @DeleteMapping("/work")
+    public Result deleteWork(@RequestParam("wid") int wid, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        int creator = workService.selectWorkCreator(wid);
+        if (uid != creator) return Result.error(APIMsg.AUTH_ERROR);
+        boolean suc = workService.deleteWork(wid);
+        return suc ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
+    }
+
+    @DeleteMapping("/work-admin")
+    public Result deleteWorkAsAdmin(@RequestParam("wid") int wid) {
+        boolean suc = workService.deleteWork(wid);
+        return suc ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
+    }
+
+    @PutMapping("/work/info")
+    public Result updateWorkInfo(@RequestParam Work work, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        int creator = workService.selectWorkCreator(work.getWid());
+        if (uid != creator) return Result.error(APIMsg.AUTH_ERROR);
+        boolean suc = workService.updateWorkInfo(work);
+        return suc ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
+    }
+
+    @PutMapping("/work/state")
+    public Result updateWorkState(@RequestParam("wid") int wid, @RequestParam("state") int state) {
+        boolean suc = workService.updateWorkState(wid, state);
+        return suc ? Result.success() : Result.error(APIMsg.UPDATE_ERROR);
+    }
+
+    @GetMapping("/work/wid/{wid}")
+    public Result selectWork(@PathVariable("wid") int wid, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        Work work = workService.selectWork(wid);
+        if (work != null) work.setLaud(workService.isLaud(uid, wid));
+        return Result.success(work);
+    }
+
+    @GetMapping({"/work/list/title/{title}", "/work/list/title/{title}/{page}"})
+    public Result selectWorkByTitle(@PathVariable("title") String title, @RequestParam("sort") int[] sort,
+                                    @PathVariable(value = "page", required = false) Integer page) {
+        if (page == null) page = 1;
+        PageHelper.startPage(page, WORK_PAGE_AMOUNT);
+        PageInfo<Work> list = new PageInfo<>(workService.selectWorkByTitle(title, sort));
+        return Result.success(list);
+    }
+
+    @GetMapping({"/work/list/style/{style}", "/work/list/style/{style}/{page}"})
+    public Result selectWorkByStyle(@PathVariable("style") String style, @RequestParam("sort") int[] sort,
+                                    @PathVariable(value = "page", required = false) Integer page) {
+        if (page == null) page = 1;
+        PageHelper.startPage(page, WORK_PAGE_AMOUNT);
+        PageInfo<Work> list = new PageInfo<>(workService.selectWorkByStyle(style, sort));
+        return Result.success(list);
+    }
+
+    @GetMapping({"/work/list/uid", "/work/list/uid/{page}"})
+    public Result selectWorkByUid(@RequestParam("sort") int[] sort, @PathVariable(value = "page", required = false) Integer page,
+                                  HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        if (page == null) page = 1;
+        PageHelper.startPage(page, WORK_PAGE_AMOUNT);
+        PageInfo<Work> list = new PageInfo<>(workService.selectWorkByCreator(uid, sort));
+        return Result.success(list);
+    }
+
+    @GetMapping({"/work/all", "/work/all/{page}"})
+    public Result selectAllWork(@RequestParam("sort") int[] sort, @PathVariable(value = "page", required = false) Integer page) {
+        if (page == null) page = 1;
+        PageHelper.startPage(page, WORK_PAGE_AMOUNT);
+        PageInfo<Work> list = new PageInfo<>(workService.selectAllWork(sort));
+        return Result.success(list);
+    }
+
+    @GetMapping({"/work-admin/list/disapprove", "/work-admin/list/disapprove/{page}"})
+    public Result selectDisapproveWork(@RequestParam("sort") int[] sort,
+                                       @PathVariable(value = "page", required = false) Integer page) {
+        if (page == null) page = 1;
+        PageHelper.startPage(page, WORK_PAGE_AMOUNT);
+        PageInfo<Work> list = new PageInfo<>(workService.selectDisapproveWork(sort));
+        return Result.success(list);
+    }
+
+    @GetMapping({"/work-admin/all", "/work-admin/all/{page}"})
+    public Result selectAllWorkAsAdmin(@RequestParam("sort") int[] sort,
+                                       @PathVariable(value = "page", required = false) Integer page) {
+        if (page == null) page = 1;
+        PageHelper.startPage(page, WORK_PAGE_AMOUNT);
+        PageInfo<Work> list = new PageInfo<>(workService.selectAllWorkAsAdmin(sort));
+        return Result.success(list);
+    }
+
+    // Laud 部分
+
+    @PostMapping("/laud")
+    public Result laud(@RequestParam("wid") int wid, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        if (workService.isLaud(uid, wid)) {
+            Work work = workService.selectWork(wid);
+            Laud laud = new Laud();
+            laud.setUid(uid);
+            laud.setWid(wid);
+            laud.setCreated(new Timestamp(System.currentTimeMillis()));
+            laud.setTitle(work.getTitle());
+            laud.setUrl(work.getUrl());
+            boolean suc = workService.insertLaud(laud);
+            return suc ? Result.success() : Result.error(APIMsg.INSERT_ERROR);
+        } else {
+            boolean suc = workService.deleteLaud(uid, wid);
+            return suc ? Result.success() : Result.error(APIMsg.INSERT_ERROR);
+        }
+    }
+
+    @GetMapping({"/laud/list", "/laud/list/{page}"})
+    public Result selectUserLaudList(@PathVariable(value = "page", required = false) Integer page, HttpSession session) {
+        int uid = (int) session.getAttribute("uid");
+        if (page == null) page = 1;
+        PageHelper.startPage(page, WORK_PAGE_AMOUNT);
+        PageInfo<Laud> list = new PageInfo<>(workService.selectLaudList(uid));
+        return Result.success(list);
+    }
 
     // Buy 部分
 
-    @Transactional
     @PostMapping("/buy/balance")
     public Result insertBuyWithBalance(@RequestParam Map<String, Object> params, HttpSession session) {
         int uid = (int) session.getAttribute("uid");
@@ -153,9 +286,8 @@ public class WorkController {
         buy.setType(type);
         buy.setWay(way);
         buy.setCreated(new Timestamp(System.currentTimeMillis()));
-        boolean suc = buyService.insertBuy(buy);
-        suc &= userService.updateUserCoin(uid, 0 - buy.getPrice());
-        suc &= userService.updateUserCoin(work.getUid(), buy.getPrice() * 0.9f);
+        int creator = workService.selectWorkCreator(wid);
+        boolean suc = buyService.insertBuy(buy, creator);
         return suc ? Result.success() : Result.error(APIMsg.INSERT_ERROR);
     }
 
@@ -165,7 +297,6 @@ public class WorkController {
         return Result.error(APIMsg.INSERT_ERROR);
     }
 
-    @Transactional
     @DeleteMapping("/buy")
     @RequiresPermissions("buy:*")
     public Result deleteBuy(@RequestParam("uid") int uid, @RequestParam("wid") int wid) {
@@ -177,9 +308,8 @@ public class WorkController {
                 return Result.error(APIMsg.BUSINESS_REFUND_ERROR);
             }
         }
-        boolean suc = buyService.deleteBuy(uid, wid);
-        suc &= userService.updateUserCoin(uid, buy.getPrice() * 0.9f);
-        suc &= userService.updateUserCoin(workService.selectWork(wid).getUid(), 0 - (buy.getPrice() * 0.9f));
+        int creator = workService.selectWorkCreator(wid);
+        boolean suc = buyService.deleteBuy(buy, creator);
         return suc ? Result.success() : Result.error(APIMsg.DELETE_ERROR);
     }
 
@@ -217,7 +347,7 @@ public class WorkController {
                                  @PathVariable(value = "page", required = false) Integer page,
                                  HttpSession session) {
         int uid = (int) session.getAttribute("uid");
-        if (uid != workService.selectWorkUid(wid)) return Result.error(APIMsg.AUTH_ERROR);
+        if (uid != workService.selectWorkCreator(wid)) return Result.error(APIMsg.AUTH_ERROR);
         if (page == null) page = 1;
         PageHelper.startPage(page, BUY_PAGE_AMOUNT);
         PageInfo<Buy> list = new PageInfo<>(buyService.selectBuyByWid(wid));
@@ -255,7 +385,7 @@ public class WorkController {
     @GetMapping("/buy/sell/{wid}")
     public Result selectWorkSell(@PathVariable("wid") int wid, HttpSession session) {
         int uid = (int) session.getAttribute("uid");
-        if (uid != workService.selectWorkUid(wid)) return Result.error(APIMsg.AUTH_ERROR);
+        if (uid != workService.selectWorkCreator(wid)) return Result.error(APIMsg.AUTH_ERROR);
         return Result.success(buyService.selectWorkSell(wid));
     }
 }

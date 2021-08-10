@@ -11,7 +11,8 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Work {
     private int wid;
-    private int uid;
+    private int creator;
+    private String creatorName;
     private String style;
     private String title;
     private String content;
@@ -21,4 +22,5 @@ public class Work {
     private String url;
     private int state;
     private Timestamp created;
+    private boolean isLaud;
 }
