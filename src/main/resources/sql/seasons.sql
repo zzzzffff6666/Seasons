@@ -72,6 +72,7 @@ CREATE TABLE `buy` (
 
 LOCK TABLES `buy` WRITE;
 /*!40000 ALTER TABLE `buy` DISABLE KEYS */;
+INSERT INTO `buy` VALUES (1,1,300.00,0,'余额','2021-08-05 11:51:29');
 /*!40000 ALTER TABLE `buy` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -86,6 +87,8 @@ CREATE TABLE `laud` (
   `uid` int NOT NULL COMMENT '用户ID',
   `wid` int NOT NULL COMMENT '作品ID',
   `created` datetime NOT NULL COMMENT '点赞时间',
+  `title` varchar(20) DEFAULT NULL COMMENT '作品标题',
+  `url` varchar(100) DEFAULT NULL COMMENT '作品URL',
   PRIMARY KEY (`uid`,`wid`),
   KEY `uid` (`uid`),
   KEY `wid` (`wid`)
@@ -102,6 +105,31 @@ LOCK TABLES `laud` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `manage`
+--
+
+DROP TABLE IF EXISTS `manage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `manage` (
+  `uid` int NOT NULL COMMENT '用户ID',
+  `max` int DEFAULT NULL COMMENT '最大风格分区管理数量',
+  `current` int DEFAULT NULL COMMENT '当前风格分区管理数量',
+  PRIMARY KEY (`uid`),
+  CONSTRAINT `check_max` CHECK ((`max` >= `current`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `manage`
+--
+
+LOCK TABLES `manage` WRITE;
+/*!40000 ALTER TABLE `manage` DISABLE KEYS */;
+/*!40000 ALTER TABLE `manage` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `message`
 --
 
@@ -109,6 +137,7 @@ DROP TABLE IF EXISTS `message`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `message` (
+  `mid` bigint NOT NULL AUTO_INCREMENT COMMENT '信息ID',
   `receiver` int NOT NULL COMMENT '用户ID',
   `sender` int NOT NULL COMMENT '发送人ID',
   `sender_name` varchar(10) NOT NULL COMMENT '发送人名称',
@@ -116,7 +145,7 @@ CREATE TABLE `message` (
   `url` varchar(100) DEFAULT NULL COMMENT '链接请求',
   `read` tinyint(1) NOT NULL COMMENT '是否已读',
   `created` datetime NOT NULL COMMENT '时间',
-  PRIMARY KEY (`receiver`,`sender`,`created`),
+  PRIMARY KEY (`mid`),
   KEY `sender` (`sender`),
   KEY `receiver` (`receiver`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -249,13 +278,15 @@ DROP TABLE IF EXISTS `style`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `style` (
   `sid` int NOT NULL AUTO_INCREMENT COMMENT '风格ID',
+  `manager` int NOT NULL COMMENT '管理者ID',
   `name` varchar(10) NOT NULL COMMENT '风格名称',
   `work_num` int NOT NULL COMMENT '总的作品数量',
   `weekly_num` int NOT NULL COMMENT '本周新增数量',
   `daily_num` int NOT NULL COMMENT '当日新增数量',
   `updated` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`sid`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY `name` (`name`),
+  KEY `manager` (`manager`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -364,7 +395,8 @@ DROP TABLE IF EXISTS `work`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `work` (
   `wid` int NOT NULL AUTO_INCREMENT COMMENT '作品ID',
-  `uid` int NOT NULL COMMENT '创作者ID',
+  `creator` int NOT NULL COMMENT '创作者ID',
+  `creator_name` varchar(10) DEFAULT NULL COMMENT '作者名称',
   `style` varchar(10) NOT NULL COMMENT '作品风格',
   `title` varchar(20) NOT NULL COMMENT '作品标题',
   `content` varchar(100) DEFAULT NULL COMMENT '作品内容',
@@ -377,7 +409,7 @@ CREATE TABLE `work` (
   PRIMARY KEY (`wid`),
   KEY `price` (`price`),
   KEY `title` (`title`),
-  KEY `uid` (`uid`)
+  KEY `creator` (`creator`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -399,4 +431,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-04 15:18:09
+-- Dump completed on 2021-08-10 16:29:26
